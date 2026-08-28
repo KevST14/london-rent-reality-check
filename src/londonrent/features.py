@@ -155,8 +155,8 @@ def build_model_frame(
     so the caller can build the right encoder.
 
     ``with_reviews=False`` drops the review/host columns. That gives the
-    "cold-start" model — what you'd use to price a brand-new listing that has no
-    reviews yet — and lets the notebook measure how much the review signals are
+    "cold-start" model - what you'd use to price a brand-new listing that has no
+    reviews yet - and lets the notebook measure how much the review signals are
     really worth (and flag the mild leakage risk they carry).
 
     ``keep_text=True`` also carries the raw ``name`` and ``description`` columns

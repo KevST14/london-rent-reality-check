@@ -1,4 +1,4 @@
-"""Tests for londonrent.features — the pure transforms and the scope rules."""
+"""Tests for londonrent.features - the pure transforms and the scope rules."""
 
 import pandas as pd
 import pytest

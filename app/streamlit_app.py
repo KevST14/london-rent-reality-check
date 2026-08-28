@@ -1,4 +1,4 @@
-"""Rent Reality Check — London · interactive demo.
+"""Rent Reality Check (London), interactive demo.
 
 Created by Kevin Steepan as a student portfolio project.
 
@@ -27,7 +27,7 @@ from londonrent.geo import add_location_features, fetch_pois
 
 MODEL_PATH = PROJECT_ROOT / "models" / "price_model.joblib"
 
-st.set_page_config(page_title="Rent Reality Check — London", page_icon="🏠", layout="wide")
+st.set_page_config(page_title="Rent Reality Check (London)", page_icon="🏠", layout="wide")
 
 
 # --------------------------------------------------------------------------- load
@@ -71,7 +71,7 @@ def pretty(col: str) -> str:
         "beds": "Beds",
         "dist_station_m": "Metres to nearest station",
         "stations_within_1km": "Stations within 1 km",
-        "dist_restaurant_m": "Metres to nearest café/restaurant",
+        "dist_restaurant_m": "Metres to nearest cafe or restaurant",
         "food_within_500m": "Food places within 500 m",
         "dist_park_m": "Metres to nearest park",
         "dist_center_m": "Metres to central London",
@@ -79,22 +79,20 @@ def pretty(col: str) -> str:
 
 
 # --------------------------------------------------------------------------- header
-st.title("🏠 Rent Reality Check — London")
+st.title("🏠 Rent Reality Check (London)")
 st.markdown(
-    "**What's a fair nightly price for a London short-let — and *why*?** "
-    "Enter a listing below. The model was trained on ~59,000 real London Airbnb "
+    "**What is a fair nightly price for a London short-let, and why?** "
+    "Enter a listing below. The model was trained on about 59,000 real London Airbnb "
     "listings (Inside Airbnb, June 2026) and tested on parts of the city it never "
-    f"saw: it gets a typical listing to within **±{METRICS['MdAPE']:.0%}**."
+    f"saw. It gets a typical listing to within **{METRICS['MdAPE']:.0%}**."
 )
 st.caption(
-    "Created by **Kevin Steepan** — a student project to show applied ML on real-world "
-    "data: framing a real problem, engineering features, validating honestly, and making "
-    "the model explain itself. The point is the reasoning, not just the number."
+    "Created by Kevin Steepan. A student project showing applied ML on real-world "
+    "data: framing a real problem, engineering features, checking the work honestly, "
+    "and making the model explain itself. The point is the reasoning, not just the number."
 )
 
-tab_price, tab_how, tab_acc = st.tabs(
-    ["🔮  Price a listing", "🛠️  How it works", "🎯  How accurate is it"]
-)
+tab_price, tab_how, tab_acc = st.tabs(["Price a listing", "How it works", "How accurate is it"])
 
 # ========================================================================= PRICE
 with tab_price:
@@ -122,7 +120,7 @@ with tab_price:
             5,
             90,
             30,
-            help="A full Airbnb amenity list is usually 20–45 items.",
+            help="A full Airbnb amenity list is usually 20 to 45 items.",
         )
 
         st.markdown("**Notable amenities**")
@@ -132,14 +130,14 @@ with tab_price:
             k: acols[i % 4].checkbox(labels[k], key=k) for i, k in enumerate(PREMIUM_AMENITIES)
         }
 
-        st.markdown("**Exact spot** — drag off the borough centre if you know it")
+        st.markdown("**Exact spot** (drag off the borough centre if you know it)")
         d = CENTROIDS.get(borough, {"lat": 51.5074, "lon": -0.1278})
         lc1, lc2 = st.columns(2)
         lat = lc1.number_input("Latitude", value=float(d["lat"]), format="%.5f")
         lon = lc2.number_input("Longitude", value=float(d["lon"]), format="%.5f")
 
         your_price = st.number_input(
-            "A price you're considering (£/night) — optional", 0, 2000, 0, step=5
+            "A price you are considering, in pounds per night (optional)", 0, 2000, 0, step=5
         )
 
     # ---- assemble one row and predict
@@ -176,12 +174,12 @@ with tab_price:
                 delta_color="off",
             )
             if abs(diff) <= 0.10:
-                st.success(f"**£{your_price:,.0f} looks about right** — within 10% of the model.")
+                st.success(f"**£{your_price:,.0f} looks about right.** Within 10% of the model.")
             elif diff > 0:
                 st.warning(
                     f"**£{your_price:,.0f} is {diff:.0%} above the model.** "
-                    "Might be justified by something it can't see (a view, a recent refurb) "
-                    "— or it's a stretch."
+                    "It might be justified by something the model cannot see, such as a "
+                    "view or a recent refurb. Or it is a stretch."
                 )
             else:
                 st.info(
@@ -197,7 +195,7 @@ with tab_price:
             axb.set_xlim(0, max(pred_gbp, your_price) * 1.6)
             axb.set_yticks([])
             axb.legend(loc="upper right", fontsize=8, frameon=False)
-            axb.set_xlabel("£ / night")
+            axb.set_xlabel("pounds per night")
             st.pyplot(fig_b, clear_figure=True)
 
         st.markdown("##### Why this price?")
@@ -206,33 +204,33 @@ with tab_price:
         sv = explainer(X_pretty)
         base_gbp = float(np.exp(np.ravel(explainer.expected_value)[0]))
         st.caption(
-            f"The model started from the **average London listing** (~£{base_gbp:,.0f}/night) "
-            "and adjusted up or down for this listing's details. Here are the biggest "
-            "adjustments — each shown as roughly how much it moved the price."
+            f"The model starts from the average London listing (about £{base_gbp:,.0f} per "
+            "night) and adjusts up or down for this listing's details. Below are the "
+            "biggest adjustments, each shown as roughly how much it moved the price."
         )
         vals = pd.Series(sv[0].values, index=X_pretty.columns)
         top = vals.reindex(vals.abs().sort_values(ascending=False).index).head(6)
 
         for name, v in top.items():
-            pct = np.exp(v) - 1  # log-space contribution -> rough %
+            pct = np.exp(v) - 1  # log-space contribution, converted to a rough percentage
             if v >= 0:
                 st.markdown(
-                    f"<span style='color:#16a34a'>▲ **{name}** — pushes the price "
-                    f"**up ~{pct:+.0%}**</span>",
+                    f"<span style='color:#16a34a'>&#9650; <b>{name}</b> pushes the price "
+                    f"<b>up about {pct:+.0%}</b></span>",
                     unsafe_allow_html=True,
                 )
             else:
                 st.markdown(
-                    f"<span style='color:#dc2626'>▼ **{name}** — pushes the price "
-                    f"**down ~{pct:.0%}**</span>",
+                    f"<span style='color:#dc2626'>&#9660; <b>{name}</b> pushes the price "
+                    f"<b>down about {pct:.0%}</b></span>",
                     unsafe_allow_html=True,
                 )
 
         with st.expander("See the full technical breakdown (SHAP waterfall)"):
             st.caption(
-                "Each bar is one feature's push in *log-price*; red is up, blue is down, "
+                "Each bar is one feature's push in log-price. Red is up, blue is down, "
                 "and the bars add up exactly to the prediction. SHAP values come from "
-                "cooperative game theory — see the **How it works** tab."
+                "cooperative game theory. See the How it works tab."
             )
             shap.plots.waterfall(sv[0], max_display=12, show=False)
             fig = plt.gcf()
@@ -241,8 +239,8 @@ with tab_price:
 
         st.markdown(
             f"**Worked out for this exact spot:** "
-            f"{one['dist_station_m'].iat[0]:.0f} m to a station · "
-            f"{one['food_within_500m'].iat[0]:.0f} places to eat within 500 m · "
+            f"{one['dist_station_m'].iat[0]:.0f} m to a station, "
+            f"{one['food_within_500m'].iat[0]:.0f} places to eat within 500 m, "
             f"{one['dist_center_m'].iat[0] / 1000:.1f} km to central London."
         )
 
@@ -251,48 +249,50 @@ with tab_how:
     st.subheader("From a spreadsheet to a price, in five steps")
     steps = [
         (
-            "1 · Real data",
+            "1. Real data",
             (
-                "~93,000 London Airbnb listings from Inside Airbnb (June 2026). A third have "
-                "no price, and those aren't random, so the model is honestly about listings "
-                "that *publish* a price — whole homes and private rooms, £10–£1000/night."
+                "About 93,000 London Airbnb listings from Inside Airbnb (June 2026). A third "
+                "have no price, and those are not random, so the model is honestly about "
+                "listings that publish a price: whole homes and private rooms, £10 to £1000 "
+                "per night."
             ),
         ),
         (
-            "2 · Predict the *log* of price",
+            "2. Predict the log of price",
             (
-                "Nightly prices are lopsided — most are £80–£250, a few run past £1000. "
-                "Predicting `log(price)` stops those few dominating and turns the model's "
-                "errors into percentages, which is how anyone actually thinks about price."
+                "Nightly prices are lopsided. Most are £80 to £250, a few run past £1000. "
+                "Predicting the log of price stops those few dominating and turns the "
+                "model's errors into percentages, which is how anyone actually thinks "
+                "about price."
             ),
         ),
         (
-            "3 · Turn location into numbers",
+            "3. Turn location into numbers",
             (
-                "A borough is huge. From each listing's coordinates the app measures distance "
-                "to the nearest Tube/rail station, how many stations and food venues are "
-                "nearby, and distance to central London — all computed in real metres, not "
-                "raw latitude/longitude."
+                "A borough is huge. From each listing's coordinates the app measures "
+                "distance to the nearest Tube or rail station, how many stations and food "
+                "venues are nearby, and distance to central London. All of it is computed "
+                "in real metres, not raw latitude and longitude."
             ),
         ),
         (
-            "4 · A gradient-boosted tree model",
+            "4. A gradient-boosted tree model",
             (
                 "Hundreds of small decision trees, each correcting the last one's mistakes. "
                 "It captures 'it depends' effects (an extra bedroom is worth more in "
-                "Kensington than in Barnet) that a straight-line model can't, and it beats a "
-                "tuned linear baseline by about £9/night. Checked with *spatial* "
-                "cross-validation — whole 2 km areas of London held out — so the score "
+                "Kensington than in Barnet) that a straight-line model cannot, and it beats "
+                "a tuned linear baseline by about £8 per night. It is checked with spatial "
+                "cross-validation, holding out whole 2 km areas of London, so the score "
                 "reflects genuinely new listings."
             ),
         ),
         (
-            "5 · Make it explain itself (SHAP)",
+            "5. Make it explain itself (SHAP)",
             (
                 "SHAP splits every prediction into per-feature contributions that add up to "
-                "the number: '+£30 for the borough, −£15 for no dishwasher, +£8 for being "
-                "close to a station…'. It comes from cooperative game theory (Shapley, 1953). "
-                "That's the waterfall chart on the first tab."
+                "the number: plus £30 for the borough, minus £15 for no dishwasher, plus £8 "
+                "for being close to a station. It comes from cooperative game theory "
+                "(Shapley, 1953). That is the waterfall chart on the first tab."
             ),
         ),
     ]
@@ -302,22 +302,23 @@ with tab_how:
 
     st.divider()
     st.markdown(
-        "**What got left out, and why.** The project also tested whether the *wording* "
-        "of a listing's description helps — it barely does (about £1–2/night on top of "
-        "the facts), so the model stays text-free and simpler to run. Review scores are "
-        "left out on purpose so it works for brand-new listings (costs ~£6.50/night of "
-        "accuracy, measured not hidden)."
+        "**What got left out, and why.** The project also tested whether the wording "
+        "of a listing's description helps. It barely does (about £1 to £2 per night on "
+        "top of the facts), so the model stays text-free and simpler to run. Review "
+        "scores are left out on purpose so it works for brand-new listings. That choice "
+        "costs about £6.50 per night of accuracy, measured rather than hidden."
     )
     st.markdown(
         "**Honest limitations.** The model under-prices the luxury end of the market, "
         "is weakest in outer boroughs with few listings, and its worst individual misses "
-        "are quirks in the source data (hotel rooms priced at the £1000 cap)."
+        "are quirks in the source data (a one-person flat priced at the £1000 cap)."
     )
     st.caption(
-        "Full write-up, code, and the three notebooks (data exploration → location "
-        "features → the model + explanations) are in the project repository. "
-        "Techniques are attributed to their common public sources (ISLR, Géron's "
-        "*Hands-On ML*, StatQuest, Molnar's *Interpretable ML*, the scikit-learn guide)."
+        "The full write-up, the code, and the four notebooks (data exploration, then "
+        "location features, then the model with explanations, then the text analysis) "
+        "are in the project repository. Techniques are attributed to common public "
+        "sources: ISLR, Geron's Hands-On ML, StatQuest, Molnar's Interpretable ML, and "
+        "the scikit-learn guide."
     )
 
 # ====================================================================== ACCURACY
@@ -329,28 +330,28 @@ with tab_acc:
         f"{METRICS['MdAPE']:.0%}",
         help="Half of listings are predicted closer than this, half further.",
     )
-    a2.metric("Within ±15%", f"{METRICS['within_15pct']:.0%}")
-    a3.metric("Mean £ error", f"£{METRICS['MAE_gbp']:.0f}")
+    a2.metric("Within 15%", f"{METRICS['within_15pct']:.0%}")
+    a3.metric("Mean pound error", f"£{METRICS['MAE_gbp']:.0f}")
     a4.metric(
-        "R² (log price)",
+        "R-squared (log price)",
         f"{METRICS['R2_log']:.2f}",
         help="0 = no better than guessing the average; 1 = perfect.",
     )
 
     st.markdown(
-        "These come from a **held-out test**: whole grid-cell areas of London were "
-        "kept out of training entirely, and the model was scored on them exactly once. "
-        "For comparison, a no-model baseline (guess the borough × room-type median) "
-        "manages about **£90 mean error / R² 0.49** — so the model roughly halves the "
-        "error a sensible lookup table would make."
+        "These come from a held-out test. Whole grid-cell areas of London were kept out "
+        "of training entirely, and the model was scored on them exactly once. For "
+        "comparison, a no-model baseline (guess the borough and room-type median) manages "
+        "about £90 mean error and R-squared 0.49, so the model roughly halves the error a "
+        "sensible lookup table would make."
     )
     st.markdown(
-        "**Where it's weakest:** the top of the price range (logging the target biases "
-        "the luxury tail low) and thinly-sampled outer boroughs (Havering, Sutton, "
-        "Richmond) where there simply isn't much to learn from."
+        "**Where it is weakest:** the top of the price range (taking logs biases the "
+        "luxury tail low) and thinly-sampled outer boroughs such as Merton, Sutton and "
+        "Enfield, where there simply is not much to learn from."
     )
 
 st.divider()
 st.caption(
-    "Rent Reality Check — London · built by Kevin Steepan · data: Inside Airbnb & OpenStreetMap"
+    "Rent Reality Check (London). Built by Kevin Steepan. Data: Inside Airbnb and OpenStreetMap."
 )

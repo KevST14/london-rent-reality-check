@@ -2,14 +2,14 @@
 
 Two very different approaches live here, and notebook 04 compares them:
 
-1. **Hand-crafted "style" features** (:func:`style_features`) — a dozen numbers
+1. **Hand-crafted "style" features** (:func:`style_features`) - a dozen numbers
    that describe *how* the description is written, not *what* it says: how long it
    is, how SHOUTY, how many exclamation marks, how many marketing adjectives
    ("stunning", "luxurious") vs practical words ("wifi", "station"). Cheap, and
    every feature is self-explaining.
 
 2. **Bag-of-words** (done inline in the notebook with scikit-learn's
-   ``TfidfVectorizer``) — treat the description as an unordered pile of words and
+   ``TfidfVectorizer``) - treat the description as an unordered pile of words and
    let the data say which words track higher or lower prices.
 
 Neither "understands" English the way a large language model would; both are the

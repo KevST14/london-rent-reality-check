@@ -1,4 +1,4 @@
-"""Tests for londonrent.text — description cleaning and the style features."""
+"""Tests for londonrent.text - description cleaning and the style features."""
 
 import pandas as pd
 

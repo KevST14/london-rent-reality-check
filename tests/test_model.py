@@ -1,4 +1,4 @@
-"""Tests for londonrent.model — the CV splitter and the metrics."""
+"""Tests for londonrent.model - the CV splitter and the metrics."""
 
 import numpy as np
 

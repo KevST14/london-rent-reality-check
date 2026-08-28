@@ -9,11 +9,11 @@ Two things a reader should know up front:
   metrics below un-log the predictions first, so "MAE = £48" means 48 real pounds.
 * **The estimator is ``HistGradientBoostingRegressor``.** It handles missing values
   by itself (it learns which way to send a NaN at each split), so we do *not*
-  impute ``bedrooms`` / ``review_scores`` — the gaps are passed straight through.
+  impute ``bedrooms`` / ``review_scores`` - the gaps are passed straight through.
   That's a real advantage of this model family; a linear model would need the gaps
   filled first.
 
-  > 📚 Native NaN handling in histogram gradient boosting: see the scikit-learn
+  > Native NaN handling in histogram gradient boosting: see the scikit-learn
   > user guide, "Histogram-Based Gradient Boosting", and LightGBM (Ke et al. 2017),
   > which introduced the approach.
 """
@@ -80,10 +80,10 @@ def spatial_block_folds(
     "tested" on its near-twin, so the score looks better than real life. Here we
     lay a ~2 km grid over London (``block_deg`` degrees ~ 1.4 km of latitude),
     give every listing its grid-cell id, and make sure a whole cell is either in
-    training or in test for a given fold — never both.
+    training or in test for a given fold - never both.
 
-    > 📚 Roberts et al. (2017), "Cross-validation strategies for data with
-    > spatial, temporal, hierarchical, or phylogenetic structure", *Ecography* —
+    > Roberts et al. (2017), "Cross-validation strategies for data with
+    > spatial, temporal, hierarchical, or phylogenetic structure", *Ecography* -
     > the standard reference for blocked/grouped CV under autocorrelation.
     """
     cell = (
