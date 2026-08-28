@@ -8,9 +8,6 @@ Snapshot: London, 2026-06-19 (https://insideairbnb.com/get-the-data/).
 
 from __future__ import annotations
 
-import re
-
-import numpy as np
 import pandas as pd
 
 from .config import INTERIM, LONDON_BBOX, RAW
@@ -28,7 +25,10 @@ _KEEP = [
     "description",
     "neighborhood_overview",
     "host_id",
-    "host_since",
+    # This snapshot leaves `host_since` blank and instead ships the host's tenure
+    # pre-computed as years + months; we fold those into a single `host_years`.
+    "hosts_time_as_host_years",
+    "hosts_time_as_host_months",
     "host_is_superhost",
     "host_listings_count",
     "host_identity_verified",
@@ -45,6 +45,7 @@ _KEEP = [
     "price",
     "minimum_nights",
     "maximum_nights",
+    "has_availability",
     "availability_365",
     "number_of_reviews",
     "number_of_reviews_ltm",
@@ -54,12 +55,10 @@ _KEEP = [
     "estimated_occupancy_l365d",
     "first_review",
     "last_review",
-    "instant_bookable",
-    "license",
 ]
 
-_DATE_COLS = ["last_scraped", "host_since", "first_review", "last_review"]
-_TF_COLS = ["host_is_superhost", "host_identity_verified", "instant_bookable"]
+_DATE_COLS = ["last_scraped", "first_review", "last_review"]
+_TF_COLS = ["host_is_superhost", "host_identity_verified", "has_availability"]
 
 
 def _money_to_float(s: pd.Series) -> pd.Series:
@@ -106,7 +105,11 @@ def clean_listings(df: pd.DataFrame | None = None) -> pd.DataFrame:
     df["amenity_count"] = (
         df["amenities"].astype("string").str.count(",").add(1).where(df["amenities"].notna())
     )
-    df["host_days_active"] = (df["last_scraped"] - df["host_since"]).dt.days
+    # How long this person has been a host, as a single decimal number of years.
+    df["host_years"] = (
+        df["hosts_time_as_host_years"].fillna(0) + df["hosts_time_as_host_months"].fillna(0) / 12
+    ).where(df["hosts_time_as_host_years"].notna() | df["hosts_time_as_host_months"].notna())
+    df = df.drop(columns=["hosts_time_as_host_years", "hosts_time_as_host_months"])
 
     min_lon, min_lat, max_lon, max_lat = LONDON_BBOX
     in_box = (
