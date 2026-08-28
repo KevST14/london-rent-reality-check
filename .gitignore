@@ -5,15 +5,16 @@ __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 
-# Data — keep the folder structure, not the contents
+# Data: keep the folder structure, not the contents
 data/raw/*
 data/interim/*
 data/processed/*
 data/external/*
 !data/**/.gitkeep
-# ...except the OpenStreetMap extracts: small, redistributable (ODbL), and it
-# saves anyone cloning the repo a slow trip to the Overpass API.
+# ...except a few small, redistributable files the repo and the deployed app need:
+# the OpenStreetMap extracts (ODbL) and the borough-boundary GeoJSON.
 !data/external/osm_*.gpkg
+!data/raw/neighbourhoods.geojson
 
 # Secrets / config
 .env

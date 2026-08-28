@@ -51,7 +51,8 @@ extend-exclude = ["notebooks", "*.ipynb"]
 select = ["E", "F", "I", "B"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["E402"]           # a couple of imports sit after a skip-guard constant
+"tests/*" = ["E402"]                # a couple of imports sit after a skip-guard constant
+"app/streamlit_app.py" = ["E402"]  # imports follow a sys.path shim for Streamlit Cloud
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
