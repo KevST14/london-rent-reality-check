@@ -30,7 +30,9 @@ curl -sS -o data/raw/neighbourhoods.geojson $base/visualisations/neighbourhoods.
 
 ## `external/` — joins (pull as we reach each pillar)
 
-- **OSM POIs** (Tube/rail stations, parks, supermarkets) via `osmnx` — for distance features. Cache here.
+- **OSM POIs** — stations (708), parks (33k), food venues (28k) pulled from OpenStreetMap
+  via `osmnx` and cached as `osm_*.gpkg` (these three *are* committed; ODbL, © OpenStreetMap
+  contributors). Refresh with `python -m londonrent.geo` after deleting them.
 - **"Housing in London"** (Kaggle: `justinas/housing-in-london`) — borough monthly mean **sale** price 1995–2020 + yearly socioeconomic vars. Drives the long-horizon time-series pillar.
   ```bash
   # needs ~/.kaggle/kaggle.json (Kaggle -> Settings -> Create New Token)

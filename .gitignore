@@ -11,6 +11,9 @@ data/interim/*
 data/processed/*
 data/external/*
 !data/**/.gitkeep
+# ...except the OpenStreetMap extracts: small, redistributable (ODbL), and it
+# saves anyone cloning the repo a slow trip to the Overpass API.
+!data/external/osm_*.gpkg
 
 # Secrets / config
 .env
@@ -19,6 +22,9 @@ kaggle.json
 # Reports
 reports/figures/*
 !reports/figures/.gitkeep
+
+# osmnx's raw Overpass response cache (regenerated on demand)
+cache/
 
 # OS / editor
 .DS_Store
