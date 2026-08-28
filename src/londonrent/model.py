@@ -31,11 +31,11 @@ from sklearn.preprocessing import OneHotEncoder
 # A modest, hand-set configuration. Notebook 03 tunes around this; these are the
 # defaults it starts from and the ones the saved app model falls back to.
 DEFAULT_PARAMS: dict = {
-    "learning_rate": 0.05,   # how big a step each new tree takes; smaller = steadier
-    "max_leaf_nodes": 31,    # complexity of each individual tree
+    "learning_rate": 0.05,  # how big a step each new tree takes; smaller = steadier
+    "max_leaf_nodes": 31,  # complexity of each individual tree
     "min_samples_leaf": 40,  # don't split down to tiny groups -> less overfitting
     "l2_regularization": 1.0,
-    "max_iter": 600,         # up to 600 trees...
+    "max_iter": 600,  # up to 600 trees...
     "early_stopping": True,  # ...but stop once a held-out slice stops improving
     "validation_fraction": 0.1,
     "n_iter_no_change": 30,
@@ -86,8 +86,11 @@ def spatial_block_folds(
     > spatial, temporal, hierarchical, or phylogenetic structure", *Ecography* —
     > the standard reference for blocked/grouped CV under autocorrelation.
     """
-    cell = (np.floor(lat / block_deg).astype(int).astype(str) + "_" +
-            np.floor(lon / block_deg).astype(int).astype(str))
+    cell = (
+        np.floor(lat / block_deg).astype(int).astype(str)
+        + "_"
+        + np.floor(lon / block_deg).astype(int).astype(str)
+    )
     cells = pd.Series(cell)
     uniq = cells.drop_duplicates().sample(frac=1.0, random_state=seed).to_numpy()
     buckets = np.array_split(uniq, n_splits)
@@ -110,7 +113,7 @@ def evaluate(y_log_true: np.ndarray, y_log_pred: np.ndarray) -> dict[str, float]
     return {
         "MAE_gbp": float(np.mean(np.abs(yp - yt))),
         "RMSE_gbp": float(np.sqrt(np.mean((yp - yt) ** 2))),
-        "MdAPE": float(np.median(abs_pct)),          # median absolute % error
+        "MdAPE": float(np.median(abs_pct)),  # median absolute % error
         "within_15pct": float(np.mean(abs_pct <= 0.15)),
         "MAE_log": float(np.mean(np.abs(y_log_true - y_log_pred))),
         "R2_log": float(1 - ss_res / ss_tot),

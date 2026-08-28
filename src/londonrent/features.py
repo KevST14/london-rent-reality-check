@@ -21,9 +21,14 @@ import pandas as pd
 from .data import build_interim
 from .geo import LOCATION_FEATURES, add_location_features, fetch_pois
 
-# --- scope (the Week-1 decisions, in code) ----------------------------------
+# --- scope (the modelling decisions, in code) ------------------------------
 PRICE_MIN, PRICE_MAX = 10, 1000
 KEEP_ROOM_TYPES = ("Entire home/apt", "Private room")
+# v2 scope fix (see notebook 03 §8): ~1,200 listings collapse to property_class
+# "hotel" - actual hotel rooms sold through Airbnb. They price on hotel logic
+# (revenue-managed, a long tail up to the £1000 cap) and were the source of the
+# model's worst individual errors. Drop them: the tool is about home-style lets.
+DROP_PROPERTY_CLASSES = ("hotel",)
 
 # --- amenities -------------------------------------------------------------
 # Inside Airbnb lists ~7,800 distinct amenity strings, most of them near-universal
@@ -109,9 +114,21 @@ def collapse_property_type(raw: pd.Series) -> pd.Series:
     return out
 
 
+# the property classes a caller (e.g. the Streamlit app) can offer, after the
+# v2 scope drop
+PROPERTY_CLASSES = sorted((set(_PROPERTY_MAP.values()) | {"other"}) - set(DROP_PROPERTY_CLASSES))
+
+
 # --- put it together --------------------------------------------------------
 CAT_FEATURES = ["neighbourhood_cleansed", "room_type", "property_class"]
-STRUCT_FEATURES = ["accommodates", "bedrooms", "beds", "bathrooms", "bath_is_shared", "amenity_count"]
+STRUCT_FEATURES = [
+    "accommodates",
+    "bedrooms",
+    "beds",
+    "bathrooms",
+    "bath_is_shared",
+    "amenity_count",
+]
 REVIEW_HOST_FEATURES = [
     "number_of_reviews",
     "reviews_per_month",
@@ -149,14 +166,14 @@ def build_model_frame(
         df = build_interim()
 
     df = df[
-        df["price"].between(PRICE_MIN, PRICE_MAX)
-        & df["room_type"].isin(KEEP_ROOM_TYPES)
+        df["price"].between(PRICE_MIN, PRICE_MAX) & df["room_type"].isin(KEEP_ROOM_TYPES)
     ].copy()
+    df["property_class"] = collapse_property_type(df["property_type"])
+    df = df[~df["property_class"].isin(DROP_PROPERTY_CLASSES)].copy()
     df["log_price"] = np.log(df["price"])
 
     df = add_location_features(df, fetch_pois())
     df = add_amenity_flags(df)
-    df["property_class"] = collapse_property_type(df["property_type"])
 
     # booleans -> 0/1 so the passthrough numeric branch can take them
     for col in ["host_is_superhost", "bath_is_shared"]:

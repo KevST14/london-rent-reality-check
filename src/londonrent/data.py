@@ -112,10 +112,7 @@ def clean_listings(df: pd.DataFrame | None = None) -> pd.DataFrame:
     df = df.drop(columns=["hosts_time_as_host_years", "hosts_time_as_host_months"])
 
     min_lon, min_lat, max_lon, max_lat = LONDON_BBOX
-    in_box = (
-        df["longitude"].between(min_lon, max_lon)
-        & df["latitude"].between(min_lat, max_lat)
-    )
+    in_box = df["longitude"].between(min_lon, max_lon) & df["latitude"].between(min_lat, max_lat)
     df = df.loc[in_box].drop_duplicates(subset="id").reset_index(drop=True)
 
     return df

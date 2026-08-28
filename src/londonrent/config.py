@@ -13,5 +13,5 @@ EXTERNAL = DATA / "external"
 REPORTS = PROJECT_ROOT / "reports"
 FIGURES = REPORTS / "figures"
 
-# London bounding box (approx, for filtering stray coordinates): (min_lon, min_lat, max_lon, max_lat)
+# London bounding box for filtering stray coordinates: (min_lon, min_lat, max_lon, max_lat)
 LONDON_BBOX = (-0.51, 51.28, 0.33, 51.69)

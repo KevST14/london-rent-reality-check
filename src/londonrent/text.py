@@ -29,23 +29,54 @@ import pandas as pd
 # the first list are signalling "premium" and charging for it, while the second
 # list is just describing the place. Notebook 04 tests whether that holds up.
 LUXURY_WORDS = {
-    "stunning", "luxury", "luxurious", "boutique", "elegant", "exclusive",
-    "prestigious", "breathtaking", "spectacular", "immaculate", "stylish",
-    "designer", "bespoke", "sumptuous", "opulent", "chic", "beautiful",
-    "gorgeous", "premium", "upscale",
+    "stunning",
+    "luxury",
+    "luxurious",
+    "boutique",
+    "elegant",
+    "exclusive",
+    "prestigious",
+    "breathtaking",
+    "spectacular",
+    "immaculate",
+    "stylish",
+    "designer",
+    "bespoke",
+    "sumptuous",
+    "opulent",
+    "chic",
+    "beautiful",
+    "gorgeous",
+    "premium",
+    "upscale",
 }
 
 PRACTICAL_WORDS = {
-    "wifi", "transport", "tube", "station", "minutes", "walk", "bus",
-    "supermarket", "parking", "quiet", "clean", "comfortable", "ideal", "close",
-    "near", "easy", "spacious", "bright", "cosy", "modern",
+    "wifi",
+    "transport",
+    "tube",
+    "station",
+    "minutes",
+    "walk",
+    "bus",
+    "supermarket",
+    "parking",
+    "quiet",
+    "clean",
+    "comfortable",
+    "ideal",
+    "close",
+    "near",
+    "easy",
+    "spacious",
+    "bright",
+    "cosy",
+    "modern",
 }
 
 _TAG_RE = re.compile(r"<[^>]+>")
 _WS_RE = re.compile(r"\s+")
-_EMOJI_RE = re.compile(
-    "[\U0001f300-\U0001faff\U00002600-\U000027bf\U0001f1e6-\U0001f1ff]"
-)
+_EMOJI_RE = re.compile("[\U0001f300-\U0001faff\U00002600-\U000027bf\U0001f1e6-\U0001f1ff]")
 
 
 def clean_description(raw: pd.Series) -> pd.Series:

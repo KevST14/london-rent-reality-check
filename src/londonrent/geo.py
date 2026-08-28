@@ -85,7 +85,7 @@ def fetch_pois(force: bool = False) -> dict[str, gpd.GeoDataFrame]:
         if path.exists() and not force:
             out[name] = gpd.read_file(path)
             continue
-        # bbox order for osmnx 2.x is (left, bottom, right, top) = (min_lon, min_lat, max_lon, max_lat)
+        # osmnx 2.x bbox order is (left, bottom, right, top) = LONDON_BBOX's order
         gdf = ox.features_from_bbox(bbox=LONDON_BBOX, tags=tags)
         # Keep it small and serialisable: just the geometry and a name if OSM has one.
         # (OSM's own id is a MultiIndex here and we don't need it, so we drop it.)
@@ -117,7 +117,9 @@ def _nearest_and_count(listing_xy: np.ndarray, poi_xy: np.ndarray, radius_m: flo
     return nearest_dist, np.asarray(counts)
 
 
-def add_location_features(df: pd.DataFrame, pois: dict[str, gpd.GeoDataFrame] | None = None) -> pd.DataFrame:
+def add_location_features(
+    df: pd.DataFrame, pois: dict[str, gpd.GeoDataFrame] | None = None
+) -> pd.DataFrame:
     """Return ``df`` with the location feature columns added.
 
     ``df`` must have ``latitude`` and ``longitude`` columns (degrees).

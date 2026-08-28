@@ -41,3 +41,17 @@ packages = ["src/londonrent"]
 
 [tool.ruff]
 line-length = 100
+# notebooks are generated from scripts and full of illustrative plotting code
+extend-exclude = ["notebooks", "*.ipynb"]
+
+[tool.ruff.lint]
+# pyflakes (F) + pycodestyle (E) + import order (I) + a light bugbear pass (B).
+# Notebooks are generated from scripts, so they're not linted.
+select = ["E", "F", "I", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]           # a couple of imports sit after a skip-guard constant
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
