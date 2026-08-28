@@ -1,0 +1,42 @@
+[project]
+name = "london-rent-reality-check"
+version = "0.1.0"
+description = "Predict, explain, and forecast London rental prices."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "pyarrow>=16",
+    "scikit-learn>=1.5",
+    "lightgbm>=4.3",
+    "shap>=0.46",
+    "statsmodels>=0.14",
+    "matplotlib>=3.9",
+    "seaborn>=0.13",
+    "geopandas>=1.0",
+    "shapely>=2.0",
+    "osmnx>=2.0",
+    "jupyterlab>=4.2",
+    "ipykernel>=6.29",
+    "kaggle>=1.6",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.3",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/londonrent"]
+
+[tool.ruff]
+line-length = 100
