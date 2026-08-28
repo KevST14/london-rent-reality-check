@@ -62,20 +62,81 @@ logged target and a thin luxury sample) and in thinly-sampled outer boroughs.
 Brent stands out: it is well sampled (555 test listings) yet still predicted at 25%
 median error, so it would be the first place to dig further.
 
+## What I tried that did not work (or barely did)
+
+Portfolio projects usually only show the happy path. Here is the rest.
+
+- **Hyperparameter tuning.** I expected a randomised search to buy a point or two
+  of R-squared. It bought nothing: the best settings scored the same as the
+  defaults, within noise. The model already stops early, which does most of the
+  regularising. I kept the tuned params (they cost nothing) and reported the zero
+  gain rather than hunting for a seed that made tuning look good.
+
+- **Using the description text.** The hypothesis was that hosts who write glossy
+  copy charge a premium the structured fields miss. Ten hand-crafted "style"
+  features plus 50 TF-IDF word-topics added about £1 to £2 per night on top of the
+  facts. Almost all of what the text "knows" is just the words leaking the facts
+  ("room" vs "townhouse", borough names). Useful negative result: the deployed
+  model is text-free.
+
+- **`neighborhood_overview` as a second text field.** Planned to use it alongside
+  `description`. It is completely empty in this data snapshot, so notebook 04 uses
+  `description` alone. Found this out in the first EDA pass rather than halfway
+  through the text work.
+
+- **Keeping every property type.** The first model kept hotel rooms sold through
+  Airbnb. The SHAP error analysis in notebook 03 kept surfacing them as the worst
+  individual misses (they price on hotel logic, not home logic). I went back to
+  the scope decision and cut them: about 1,200 listings, and the held-out metrics
+  barely moved, but the question got cleaner.
+
+- **The £1000 price cap.** Dropping hotels removed the hotel-room edge cases, but
+  the hard cap still produces new ones: the current worst miss is a one-person
+  whole flat in Hounslow priced at £1000. A proper fix (model the tail separately,
+  or a quantile loss) is on the "next" list.
+
+- **The first OpenStreetMap station query.** `railway=station` on its own misses
+  Underground-only stops. The distance-to-station feature was quietly wrong until I
+  added `station=subway` and light-rail to the query.
+
+- **Euclidean distance on latitude and longitude.** The first
+  distance-to-station numbers were nonsense. Near London, one degree of longitude
+  is about 43 km on the ground and one degree of latitude is about 111 km, so
+  `sqrt(dlat^2 + dlon^2)` is meaningless. Fixed by projecting to the British
+  National Grid (metres) before any distance maths.
+
+- **Park distance as distance-to-centroid.** Measuring to a park's centre means a
+  listing right next to a huge park can look "far" from it. I shipped the simple
+  version and flagged it; distance-to-polygon-boundary is the fix.
+
+## Two deeper looks (notebook 03b)
+
+- **Partial dependence turned up a surprise.** Once the model knows how central a
+  listing is, the average marginal effect of walking distance to a *station* is
+  close to flat. Station distance still matters for individual listings (SHAP
+  shows that), but the model has folded most of the "how connected is this"
+  signal into distance-to-centre, because the two features overlap. SHAP shows
+  attribution; partial-dependence shows the shape, and here they say different
+  things.
+- **A naive "biggest mispricing" scan mostly finds junk.** Listing every
+  listing's predicted-minus-actual gap and taking the extremes surfaces
+  data-entry artefacts (single rooms listed at £475 a night, Westminster flats at
+  £45 a night), not real bargains. A useful mispricing detector would need
+  per-prediction confidence intervals and a plausibility filter on the listing.
+
 ## What I would do next
 
 - **Finish the third pillar: a 25-year borough price trend and forecast** using the
-  Kaggle "Housing in London" dataset, with a proper walk-forward backtest against a
+  Kaggle "Housing in London" dataset, with a walk-forward backtest against a
   seasonal-naive baseline.
-- **Handle the price tail properly** instead of a hard £1000 cap: either model the
-  tail separately, or fit with a tail-robust loss (Huber, or quantile loss for
-  prediction intervals).
+- **Handle the price tail properly** instead of a hard £1000 cap: model the tail
+  separately, or fit with a tail-robust loss (Huber, or quantile loss for
+  prediction intervals). Quantile loss would also give the per-prediction
+  intervals the mispricing scan needs.
 - **Better geo features:** distance to a park's boundary instead of its centre, and
   distances to several centres (City, West End, Canary Wharf) instead of just
   Charing Cross.
 - **Fit the text components inside each CV fold** rather than once on all rows, to
   remove the mild leakage in the current TF-IDF / SVD step.
-- **Partial-dependence and ICE plots** for the top features, to complement SHAP:
-  SHAP shows attribution, PDP shows the shape of the relationship.
 - **Dig into Brent** specifically, since it is the one well-sampled borough the
   model handles badly.

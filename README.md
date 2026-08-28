@@ -52,7 +52,13 @@ long-run time-series notebook and the write-up are next.
 | [`02_geo_features`](notebooks/02_geo_features.ipynb) | Does the exact spot matter, beyond the borough label? | Yes. Six OpenStreetMap features (distance to Tube, centre, food, park) lift R-squared from 0.62 to **0.65** and cut error from £78 to **£72**. |
 | [`03_price_model`](notebooks/03_price_model.ipynb) | Build, check, tune, and explain the real model. | Held-out test: about **£60 mean error, 22% median error, R-squared 0.72**. Beats a linear baseline by about £8. SHAP explains every prediction. |
 | [`04_text`](notebooks/04_text.ipynb) | Does the wording of the description predict price on top of the facts? | Barely. Text alone reaches R-squared 0.46, but on top of the facts it adds only about **£1 to £2 per night**. A useful negative result: the app keeps the facts-only model. Marketing words do track price (correlation 0.24). |
+| [`03b_model_deep_dives`](notebooks/03b_model_deep_dives.ipynb) | What shapes did the model learn, and which listings does it most disagree with? | Partial-dependence and ICE plots for the top features, plus a scan of the listings the model calls overpriced or a bargain. |
 | `05` (planned) | Where have London prices been heading over 25 years? | To do |
+
+The reasoning, including the decisions that changed mid-project and the things
+that did not work, is written up in **[`FINDINGS.md`](FINDINGS.md)**.
+
+![Pipeline: raw data flows through data.py and geo.py into features.py, then model.py, then out to the notebooks and the saved model that the app loads](docs/pipeline.png)
 
 ## Live demo
 
@@ -147,10 +153,10 @@ See [`data/README.md`](data/README.md). Two sources:
 ## Layout
 
 ```
-FINDINGS.md      one-page write-up: the question, what turned up, what is next
-Makefile         make data | notebooks | app | test | ...
+FINDINGS.md      one-page write-up: the question, what turned up, what did not work
+Makefile         make data | notebooks | app | test | diagram | ...
 data/            raw -> clean -> interim -> feature-engineered  (git-ignored; OSM extracts kept)
-notebooks/       the narrative: EDA, geo features, the model, the text analysis
+notebooks/       01-04 the narrative; 03b PDP/ICE + the mispricing scan
 src/londonrent/  reusable code
     data.py        load and clean the Inside Airbnb snapshot
     geo.py         lat/long -> location features (with the projection explanation)
@@ -160,7 +166,8 @@ src/londonrent/  reusable code
 app/             the Streamlit demo
 models/          the saved model the app loads
 tests/           pytest tests for the src package
-scripts/         screenshot.py regenerates docs/app.png from the running app
+scripts/         screenshot.py and pipeline_diagram.py regenerate the docs/ images
+docs/            the app screenshot and the pipeline diagram
 ```
 
 ## A note on the citations

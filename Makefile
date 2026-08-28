@@ -20,13 +20,17 @@ osm:                 ## refresh the OpenStreetMap extracts (stations, parks, foo
 notebooks:           ## execute all notebooks in order
 	uv run jupyter nbconvert --to notebook --execute --inplace \
 		notebooks/01_eda.ipynb notebooks/02_geo_features.ipynb \
-		notebooks/03_price_model.ipynb notebooks/04_text.ipynb
+		notebooks/03_price_model.ipynb notebooks/03b_model_deep_dives.ipynb \
+		notebooks/04_text.ipynb
 
 app:                 ## run the Streamlit demo
 	uv run streamlit run app/streamlit_app.py
 
 screenshot:          ## regenerate docs/app.png from the running app
 	uv run python scripts/screenshot.py
+
+diagram:             ## regenerate docs/pipeline.png
+	uv run python scripts/pipeline_diagram.py
 
 test:                ## run the test suite
 	uv run pytest
