@@ -3,10 +3,27 @@
 **Given a London short-let listing, predict a fair nightly price, explain the
 number, and show where that area's prices have been heading.**
 
-A student portfolio project. The goal is not just a model — it's to show the
-*reasoning*: every notebook explains what it's doing and why in plain language,
-then adds a note for readers who know ML, and cites where each technique is
-commonly learned from.
+*Created by **Kevin Steepan**.*
+
+A student portfolio project built on real-world data and a problem anyone can
+research and observe. The aim is to show the **skills that turn into job
+experience** — framing a real question, cleaning messy public data, engineering
+features with a reason behind each one, validating honestly instead of
+optimistically, and making the model explain itself — and to show the **reasoning**,
+not just the final number.
+
+Every notebook is written to be read by someone with no ML background *and* by
+someone who wants into the field:
+
+- a plain-English walk-through of what each step does and why,
+- `###` sub-sections that go deeper for a student learning ML — the concept, why
+  it works, the trade-offs, what to try next,
+- a plain reading of every result, then a deeper note,
+- a **"where this comes from"** pointer to the common public source for each
+  technique (ISLR, Géron, StatQuest, Molnar's *Interpretable ML*, the scikit-learn
+  guide, key papers),
+- code comments that narrate *how the code was arrived at* — what was tried, what
+  broke, why this choice.
 
 **Status:** pillars 1–2 of 3 built (price model + explanations). Long-run
 time-series pillar and the write-up are next.
@@ -23,9 +40,10 @@ time-series pillar and the write-up are next.
 | _`04` (planned)_ | Does the *description text* predict price on top of the structured features? | — |
 | _`05` (planned)_ | Where have London prices been heading? (25-year borough trend) | — |
 
-**Live demo:** [`app/streamlit_app.py`](app/streamlit_app.py) — enter a listing,
-get a predicted price, a SHAP breakdown of what drove it, and how a price you're
-considering compares.
+**Live demo:** [`app/streamlit_app.py`](app/streamlit_app.py) — three tabs:
+*Price a listing* (prediction + a plain verdict on a price you enter + a SHAP
+breakdown of what drove it), *How it works* (the five-step method in plain
+language), and *How accurate is it* (the held-out test numbers).
 
 ```bash
 uv sync
@@ -106,6 +124,4 @@ models/          the saved model the app loads
 
 The notebooks attribute techniques to widely-used public sources — *An
 Introduction to Statistical Learning* (ISLR), Géron's *Hands-On Machine Learning*,
-StatQuest, Christoph Molnar's *Interpretable ML*, the scikit-learn user guide, and
-a few papers. They're where these ideas are *commonly* learned, not a claim about
-any specific course. Swap in your own reading where you'd rather.
+StatQuest, Christoph Molnar's *Interpretable ML* and the scikit-learn user guide.
