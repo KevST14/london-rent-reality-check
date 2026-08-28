@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "demo",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "streamlit", "run", "app/streamlit_app.py", "--server.headless", "true", "--server.port", "8531"],
+      "port": 8531
+    }
+  ]
+}

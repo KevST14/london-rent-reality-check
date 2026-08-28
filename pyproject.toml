@@ -20,6 +20,7 @@ dependencies = [
     "jupyterlab>=4.2",
     "ipykernel>=6.29",
     "kaggle>=1.6",
+    "streamlit>=1.37",
 ]
 
 [dependency-groups]
