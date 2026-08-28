@@ -25,8 +25,8 @@ someone who wants into the field:
 - code comments that narrate *how the code was arrived at* — what was tried, what
   broke, why this choice.
 
-**Status:** pillars 1–2 of 3 built (price model + explanations). Long-run
-time-series pillar and the write-up are next.
+**Status:** price model + explanations + text pillar done. Long-run time-series
+pillar and the write-up are next.
 
 ---
 
@@ -37,7 +37,7 @@ time-series pillar and the write-up are next.
 | [`01_eda`](notebooks/01_eda.ipynb) | What are we predicting, on which listings, and what's the score to beat? | Target = `log(price)`, scope = £10–1000/night entire-home + private-room. No-model baseline: **£-MAE ≈ 90 / R² ≈ 0.49**. |
 | [`02_geo_features`](notebooks/02_geo_features.ipynb) | Does the exact spot matter, beyond the borough label? | Yes. Six OpenStreetMap features (distance to Tube / centre / food / park) lift R² 0.60 → **0.64** and cut error £78 → **£73**. |
 | [`03_price_model`](notebooks/03_price_model.ipynb) | Build, check, tune, and **explain** the real model. | Held-out test: **£-MAE ≈ £60 · median error ≈ 21% · R²(log) ≈ 0.71**. Beats a linear baseline by ~£9. SHAP explains every prediction. |
-| _`04` (planned)_ | Does the *description text* predict price on top of the structured features? | — |
+| [`04_text`](notebooks/04_text.ipynb) | Does the *wording* of the description predict price on top of the facts? | Barely. Text alone gets R² ≈ 0.45, but on top of the facts it adds only **~£1.7 / +0.01 R²** — a useful *negative* result (the app keeps the facts-only model). Marketing words do track price (corr +0.24). |
 | _`05` (planned)_ | Where have London prices been heading? (25-year borough trend) | — |
 
 **Live demo:** [`app/streamlit_app.py`](app/streamlit_app.py) — three tabs:

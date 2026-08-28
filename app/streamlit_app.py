@@ -231,12 +231,16 @@ with tab_how:
 
     st.divider()
     st.markdown(
+        "**What got left out, and why.** The project also tested whether the *wording* "
+        "of a listing's description helps — it barely does (about £1–2/night on top of "
+        "the facts), so the model stays text-free and simpler to run. Review scores are "
+        "left out on purpose so it works for brand-new listings (costs ~£6.50/night of "
+        "accuracy, measured not hidden)."
+    )
+    st.markdown(
         "**Honest limitations.** The model under-prices the luxury end of the market, "
         "is weakest in outer boroughs with few listings, and its worst individual misses "
-        "are quirks in the source data (hotel rooms priced at the £1000 cap). It uses "
-        "**no review scores**, on purpose, so it works for brand-new listings — that "
-        "choice costs about £6.50/night of accuracy, which the project measures rather "
-        "than hides."
+        "are quirks in the source data (hotel rooms priced at the £1000 cap)."
     )
     st.caption(
         "Full write-up, code, and the three notebooks (data exploration → location "

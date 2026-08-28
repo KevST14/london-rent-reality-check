@@ -129,6 +129,7 @@ def build_model_frame(
     df: pd.DataFrame | None = None,
     *,
     with_reviews: bool = True,
+    keep_text: bool = False,
 ) -> tuple[pd.DataFrame, dict[str, list[str]]]:
     """Return ``(frame, feature_groups)`` ready for :mod:`londonrent.model`.
 
@@ -140,6 +141,9 @@ def build_model_frame(
     "cold-start" model — what you'd use to price a brand-new listing that has no
     reviews yet — and lets the notebook measure how much the review signals are
     really worth (and flag the mild leakage risk they carry).
+
+    ``keep_text=True`` also carries the raw ``name`` and ``description`` columns
+    through (unused by the model, but notebook 04 needs them for the text pillar).
     """
     if df is None:
         df = build_interim()
@@ -164,6 +168,8 @@ def build_model_frame(
 
     groups = {"categorical": CAT_FEATURES, "numeric": numeric}
     keep = CAT_FEATURES + numeric + ["price", "log_price", "latitude", "longitude", "id"]
+    if keep_text:
+        keep = keep + [c for c in ("name", "description") if c in df.columns]
     return df[keep].reset_index(drop=True), groups
 
 
