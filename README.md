@@ -5,12 +5,12 @@ and (next) show where that area's prices have been heading.
 
 Created by **Kevin Steepan**.
 
-<!-- BADGES: replace GH_USER with your GitHub username once the repo is pushed -->
-[![CI](https://github.com/GH_USER/london-rent-reality-check/actions/workflows/ci.yml/badge.svg)](https://github.com/GH_USER/london-rent-reality-check/actions/workflows/ci.yml)
+[![CI](https://github.com/KevST14/london-rent-reality-check/actions/workflows/ci.yml/badge.svg)](https://github.com/KevST14/london-rent-reality-check/actions/workflows/ci.yml)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**[Live demo](https://LIVE_DEMO_URL)** | **[One-page findings](FINDINGS.md)** |
+**[Live demo](https://london-rent-reality-check-jikdwpaozdee8hvjjccgaa.streamlit.app)**
+| **[One-page findings](FINDINGS.md)** |
 notebooks: [EDA](notebooks/01_eda.ipynb),
 [location features](notebooks/02_geo_features.ipynb),
 [the model](notebooks/03_price_model.ipynb),
@@ -168,5 +168,4 @@ scripts/         screenshot.py regenerates docs/app.png from the running app
 The notebooks point techniques at widely-used public sources: An Introduction to
 Statistical Learning (ISLR), Geron's Hands-On Machine Learning, StatQuest,
 Christoph Molnar's Interpretable Machine Learning, the scikit-learn user guide, and
-a few papers. They are where these ideas are commonly learned, not a claim about
-any specific course. Swap in your own reading where you would rather.
+a few papers. 
