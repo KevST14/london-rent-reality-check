@@ -9,14 +9,17 @@ and show where that area's rents are heading.
 
 | Pillar | Question | Method |
 |---|---|---|
-| Tabular ML | What's a fair price for *this* listing? | Gradient boosting + geospatial feature engineering, SHAP for explanation |
-| NLP | Does *how* a host writes the description predict price on top of the actual features? | Structured-only model vs. structured + text, nested comparison |
-| Time series | Where are rents in this area heading over the next 6–12 months? | Trend/seasonality decomposition, walk-forward backtest vs. naive baseline |
+| Tabular ML | What's a fair nightly price for *this* listing? | Gradient boosting on listing attributes + engineered distance-to-Tube / centre / POI features; SHAP to explain each prediction |
+| NLP | Does *how* a host writes the `description` predict price on top of the structured features? | Structured-only model vs. structured + text (TF-IDF / embeddings), nested comparison; which tokens move price |
+| Time series | Where are prices heading, and how does demand move through the year? | Primary: 25-year borough sale-price trend + forecast from "Housing in London", walk-forward backtest vs. seasonal-naive. Secondary: Airbnb forward-availability -> borough booking-curve seasonality |
+
+Data: Inside Airbnb London (2026-06-19 snapshot) + Kaggle `justinas/housing-in-london`.
+It's short-let, not long-let — the framing is "is this listing priced right for its area and features?"
 
 ## Deliverable
 
 A Streamlit app: enter a listing → predicted fair price + SHAP waterfall +
-"~X% above/below model" verdict + area rent-trend chart. Plus this repo and a writeup.
+"~X% above/below model" verdict + borough price-trend chart. Plus this repo and a writeup.
 
 ## Data
 
