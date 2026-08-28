@@ -5,6 +5,19 @@ and (next) show where that area's prices have been heading.
 
 Created by **Kevin Steepan**.
 
+<!-- BADGES: replace GH_USER with your GitHub username once the repo is pushed -->
+[![CI](https://github.com/GH_USER/london-rent-reality-check/actions/workflows/ci.yml/badge.svg)](https://github.com/GH_USER/london-rent-reality-check/actions/workflows/ci.yml)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**[Live demo](https://LIVE_DEMO_URL)** | **[One-page findings](FINDINGS.md)** |
+notebooks: [EDA](notebooks/01_eda.ipynb),
+[location features](notebooks/02_geo_features.ipynb),
+[the model](notebooks/03_price_model.ipynb),
+[text analysis](notebooks/04_text.ipynb)
+
+![The demo: enter a listing, get a price and a plain-English breakdown of what moved it](docs/app.png)
+
 ## What this is
 
 A student portfolio project built on real public data and a problem anyone can go
@@ -51,11 +64,17 @@ long-run time-series notebook and the write-up are next.
 - **How accurate is it:** the held-out test numbers
 
 ```bash
-uv sync
-uv run streamlit run app/streamlit_app.py     # the demo
-uv run jupyter lab                             # the notebooks
-uv run pytest                                  # the tests
+uv sync                                        # set up the environment
+make data                                      # download the Inside Airbnb snapshot
+make notebooks                                 # run all four notebooks in order
+make app                                       # launch the demo
+make test                                      # run the tests
+make help                                      # list every target
 ```
+
+Raw data is git-ignored, so a fresh clone needs `make data` before `make
+notebooks`. The OpenStreetMap extracts and the trained model are committed, so the
+app runs straight after `uv sync`.
 
 ## The method
 
@@ -128,6 +147,8 @@ See [`data/README.md`](data/README.md). Two sources:
 ## Layout
 
 ```
+FINDINGS.md      one-page write-up: the question, what turned up, what is next
+Makefile         make data | notebooks | app | test | ...
 data/            raw -> clean -> interim -> feature-engineered  (git-ignored; OSM extracts kept)
 notebooks/       the narrative: EDA, geo features, the model, the text analysis
 src/londonrent/  reusable code
@@ -139,6 +160,7 @@ src/londonrent/  reusable code
 app/             the Streamlit demo
 models/          the saved model the app loads
 tests/           pytest tests for the src package
+scripts/         screenshot.py regenerates docs/app.png from the running app
 ```
 
 ## A note on the citations
