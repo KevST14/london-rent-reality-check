@@ -20,29 +20,16 @@ notebooks: [EDA](notebooks/01_eda.ipynb),
 
 ## What this is
 
-A student portfolio project built on real public data and a problem anyone can go
-and check for themselves. It is meant to show the skills that turn into job
-experience:
+A student portfolio project on real public data: Inside Airbnb's London listings
+plus OpenStreetMap. It predicts a fair nightly price, explains each prediction, and
+checks its own accuracy on parts of the city it never trained on.
 
-- framing a real question
-- cleaning messy public data
-- engineering features with a reason behind each one
-- checking the work honestly instead of optimistically
-- making the model explain itself
+Each notebook has a plain walk-through anyone can follow, with short "Deeper"
+sections for a reader learning ML and a "where this comes from" pointer to the
+public source for each technique. Code comments record what was tried and why.
 
-Every notebook is written to be read by someone with no ML background **and** by
-someone who wants into the field:
-
-- a plain walk-through of what each step does and why
-- short "Deeper" sections for a reader learning ML: the concept, why it works, the
-  trade-offs, what to try next
-- a plain reading of every result, then a deeper note
-- a "where this comes from" pointer to the common public source for each technique
-- code comments that say how the code was arrived at: what was tried, what broke,
-  why this choice
-
-**Status:** price model, explanations, and the text analysis are done. The
-long-run time-series notebook and the write-up are next.
+**Status:** price model, uncertainty band, explanations, and the text analysis are
+done. The long-run time-series notebook is next.
 
 ## The notebooks
 
