@@ -17,7 +17,8 @@ June 2026), plus stations, parks and food venues from OpenStreetMap.
 - For comparison, guessing the borough-and-room-type median gets mean error about
   £90 / R-squared 0.49. The model roughly halves the error of a sensible lookup
   table.
-- Every prediction comes with a SHAP breakdown of which features moved it.
+- Every prediction comes with a SHAP breakdown of which features moved it, and a
+  rough 10-to-90 price band from two quantile models (empirical coverage 75%).
 
 ## Five things worth knowing
 
@@ -109,7 +110,7 @@ Portfolio projects usually only show the happy path. Here is the rest.
   listing right next to a huge park can look "far" from it. I shipped the simple
   version and flagged it; distance-to-polygon-boundary is the fix.
 
-## Two deeper looks (notebook 03b)
+## Deeper looks (notebook 03b, 03c)
 
 - **Partial dependence turned up a surprise.** Once the model knows how central a
   listing is, the average marginal effect of walking distance to a *station* is
@@ -118,21 +119,31 @@ Portfolio projects usually only show the happy path. Here is the rest.
   signal into distance-to-centre, because the two features overlap. SHAP shows
   attribution; partial-dependence shows the shape, and here they say different
   things.
-- **A naive "biggest mispricing" scan mostly finds junk.** Listing every
-  listing's predicted-minus-actual gap and taking the extremes surfaces
-  data-entry artefacts (single rooms listed at £475 a night, Westminster flats at
-  £45 a night), not real bargains. A useful mispricing detector would need
-  per-prediction confidence intervals and a plausibility filter on the listing.
+- **A "biggest mispricing" scan is a weak detector, even with a filter.** Raw, the
+  extremes are data-entry artefacts. After filtering to listings with real reviews
+  and a short minimum stay, the extremes are still listings whose stated nightly
+  price does not match the product (private rooms at £355 a night, Westminster
+  flats at £58 a night). A real detector would flag listings outside their own
+  prediction band and still need a human.
+- **Brent stayed an open question.** The fairness check flagged it. I checked three
+  explanations: the error is mildly one-directional (+6.6%), the price spread is
+  normal, and the big misses are not concentrated near Wembley Stadium. Two
+  hypotheses ruled out, the third weak. Reported as unsolved.
+- **The library choice does not matter here.** LightGBM and scikit-learn's
+  HistGradientBoosting tie; XGBoost's defaults are slightly behind. scikit-learn
+  is kept because it needs no OpenMP system library for the deploy.
 
 ## What I would do next
 
 - **Finish the third pillar: a 25-year borough price trend and forecast** using the
   Kaggle "Housing in London" dataset, with a walk-forward backtest against a
   seasonal-naive baseline.
+- **Calibrate the prediction band.** The current 10-to-90 quantile band covers 75%
+  of held-out prices against an 80% target, so it runs narrow. Conformal
+  prediction would fix the width, and would give the mispricing scan a proper
+  "outside its own band" test.
 - **Handle the price tail properly** instead of a hard £1000 cap: model the tail
-  separately, or fit with a tail-robust loss (Huber, or quantile loss for
-  prediction intervals). Quantile loss would also give the per-prediction
-  intervals the mispricing scan needs.
+  separately, or fit with a tail-robust loss.
 - **Better geo features:** distance to a park's boundary instead of its centre, and
   distances to several centres (City, West End, Canary Wharf) instead of just
   Charing Cross.
