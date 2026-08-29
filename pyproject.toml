@@ -21,6 +21,7 @@ dependencies = [
     "ipykernel>=6.29",
     "kaggle>=1.6",
     "streamlit>=1.37",
+    "xgboost>=3.2.0",
 ]
 
 [dependency-groups]
