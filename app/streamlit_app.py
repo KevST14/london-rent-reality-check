@@ -144,7 +144,8 @@ with tab_price:
             st.session_state[key] = (float(d["lat"]), float(d["lon"]))
         cur_lat, cur_lon = st.session_state[key]
 
-        fmap = folium.Map(location=[cur_lat, cur_lon], zoom_start=13, tiles="cartodbpositron")
+        # plain OpenStreetMap tiles: no API key needed (cartodb tiles now require one)
+        fmap = folium.Map(location=[cur_lat, cur_lon], zoom_start=13, tiles="OpenStreetMap")
         folium.Marker([cur_lat, cur_lon], tooltip="this listing").add_to(fmap)
         clicked = st_folium(
             fmap,
