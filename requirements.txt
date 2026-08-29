@@ -3,6 +3,8 @@
 # Kept lean on purpose: no lightgbm, jupyter, osmnx or playwright (the app does
 # not import them), so the deploy stays small and fast.
 streamlit>=1.37
+streamlit-folium>=0.20
+folium>=0.16
 pandas>=2.2
 numpy>=1.26
 pyarrow>=16

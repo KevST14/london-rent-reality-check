@@ -20,12 +20,14 @@ from pathlib import Path
 # installing the package first (this is how Streamlit Community Cloud runs it).
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+import folium
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import shap
 import streamlit as st
+from streamlit_folium import st_folium
 
 from londonrent import model as M
 from londonrent.config import PROJECT_ROOT
@@ -94,9 +96,7 @@ st.markdown(
     f"saw. It gets a typical listing to within **{METRICS['MdAPE']:.0%}**."
 )
 st.caption(
-    "Created by Kevin Steepan. A student project showing applied ML on real-world "
-    "data: framing a real problem, engineering features, checking the work honestly, "
-    "and making the model explain itself. The point is the reasoning, not just the number."
+    "Created by Kevin Steepan. A student project: code, notebooks and the write-up are on GitHub."
 )
 
 tab_price, tab_how, tab_acc = st.tabs(["Price a listing", "How it works", "How accurate is it"])
@@ -137,11 +137,28 @@ with tab_price:
             k: acols[i % 4].checkbox(labels[k], key=k) for i, k in enumerate(PREMIUM_AMENITIES)
         }
 
-        st.markdown("**Exact spot** (drag off the borough centre if you know it)")
+        st.markdown("**Exact spot** (click the map to move the pin)")
         d = CENTROIDS.get(borough, {"lat": 51.5074, "lon": -0.1278})
-        lc1, lc2 = st.columns(2)
-        lat = lc1.number_input("Latitude", value=float(d["lat"]), format="%.5f")
-        lon = lc2.number_input("Longitude", value=float(d["lon"]), format="%.5f")
+        key = f"pt_{borough}"
+        if key not in st.session_state:
+            st.session_state[key] = (float(d["lat"]), float(d["lon"]))
+        cur_lat, cur_lon = st.session_state[key]
+
+        fmap = folium.Map(location=[cur_lat, cur_lon], zoom_start=13, tiles="cartodbpositron")
+        folium.Marker([cur_lat, cur_lon], tooltip="this listing").add_to(fmap)
+        clicked = st_folium(
+            fmap,
+            height=260,
+            key=f"map_{borough}_{cur_lat:.4f}_{cur_lon:.4f}",
+            returned_objects=["last_clicked"],
+        )
+        if clicked and clicked.get("last_clicked"):
+            st.session_state[key] = (
+                clicked["last_clicked"]["lat"],
+                clicked["last_clicked"]["lng"],
+            )
+        lat, lon = st.session_state[key]
+        st.caption(f"point: {lat:.4f}, {lon:.4f}")
 
         your_price = st.number_input(
             "A price you are considering, in pounds per night (optional)", 0, 2000, 0, step=5
