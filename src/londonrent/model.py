@@ -69,6 +69,19 @@ def make_model(params: dict | None = None) -> HistGradientBoostingRegressor:
     return HistGradientBoostingRegressor(**{**DEFAULT_PARAMS, **(params or {})})
 
 
+def make_quantile_model(
+    quantile: float, params: dict | None = None
+) -> HistGradientBoostingRegressor:
+    """Same booster, but trained to predict a given quantile of log price instead
+    of the mean. Fit one at 0.1 and one at 0.9 to get a rough 10-to-90 band.
+
+    This gives an *empirical* band, not a calibrated guarantee. Notebook 03 checks
+    what fraction of held-out prices actually land inside it.
+    """
+    cfg = {**DEFAULT_PARAMS, "loss": "quantile", "quantile": quantile, **(params or {})}
+    return HistGradientBoostingRegressor(**cfg)
+
+
 # --- honest cross-validation --------------------------------------------------
 def spatial_block_folds(
     lat: np.ndarray, lon: np.ndarray, n_splits: int = 5, block_deg: float = 0.02, seed: int = 0
@@ -121,9 +134,24 @@ def evaluate(y_log_true: np.ndarray, y_log_pred: np.ndarray) -> dict[str, float]
 
 
 # --- persistence --------------------------------------------------------------
-def save_bundle(path: str | Path, *, encoder, model, groups: dict, metrics: dict) -> None:
-    """Save everything the Streamlit app needs in one file."""
-    dump({"encoder": encoder, "model": model, "groups": groups, "metrics": metrics}, path)
+def save_bundle(
+    path: str | Path,
+    *,
+    encoder,
+    model,
+    groups: dict,
+    metrics: dict,
+    quantile_models: dict[float, object] | None = None,
+) -> None:
+    """Save everything the Streamlit app needs in one file.
+
+    ``quantile_models`` is an optional ``{0.1: model, 0.9: model}`` for the rough
+    prediction band; the app shows a point estimate if it is absent.
+    """
+    obj = {"encoder": encoder, "model": model, "groups": groups, "metrics": metrics}
+    if quantile_models:
+        obj["quantile_models"] = quantile_models
+    dump(obj, path)
 
 
 def load_bundle(path: str | Path) -> dict:

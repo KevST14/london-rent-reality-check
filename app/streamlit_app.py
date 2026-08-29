@@ -168,10 +168,22 @@ with tab_price:
     X_one = M.build_design_matrix(one, GROUPS, ENCODER)
     pred_gbp = float(np.exp(MODEL.predict(X_one)[0]))
 
+    # rough 10-to-90 band from the two quantile models saved in the bundle
+    qm = bundle.get("quantile_models")
+    band = None
+    if qm:
+        lo, hi = sorted(float(np.exp(qm[q].predict(X_one)[0])) for q in (0.1, 0.9))
+        band = (lo, hi)
+
     with right:
         st.subheader("The model's take")
         mc1, mc2 = st.columns(2)
         mc1.metric("Predicted fair price", f"£{pred_gbp:,.0f}", help="per night")
+        if band:
+            mc1.caption(
+                f"likely £{band[0]:,.0f} to £{band[1]:,.0f} per night (rough band, "
+                "about 75% of real prices land inside it)"
+            )
         if your_price > 0:
             diff = (your_price - pred_gbp) / pred_gbp
             mc2.metric(
@@ -194,12 +206,13 @@ with tab_price:
                     "You may be leaving money on the table."
                 )
 
-            # simple visual: where your price sits around the prediction
+            # simple visual: your price against the model prediction and its band
             fig_b, axb = plt.subplots(figsize=(7, 0.9))
-            axb.axvspan(pred_gbp * 0.9, pred_gbp * 1.1, color="#22c55e", alpha=0.25)
+            span = band if band else (pred_gbp * 0.9, pred_gbp * 1.1)
+            axb.axvspan(*span, color="#22c55e", alpha=0.22, label="model band")
             axb.axvline(pred_gbp, color="#22c55e", lw=2, label="model")
             axb.axvline(your_price, color="#111827", lw=2, ls="--", label="your price")
-            axb.set_xlim(0, max(pred_gbp, your_price) * 1.6)
+            axb.set_xlim(0, max(pred_gbp, your_price, span[1]) * 1.4)
             axb.set_yticks([])
             axb.legend(loc="upper right", fontsize=8, frameon=False)
             axb.set_xlabel("pounds per night")
@@ -356,6 +369,12 @@ with tab_acc:
         "**Where it is weakest:** the top of the price range (taking logs biases the "
         "luxury tail low) and thinly-sampled outer boroughs such as Merton, Sutton and "
         "Enfield, where there simply is not much to learn from."
+    )
+    st.markdown(
+        "**The band** shown on the first tab comes from two extra models trained to "
+        "predict the 10th and 90th percentile price. On held-out data about 75% of "
+        "real prices land inside it, against a target of 80%, so it runs a little "
+        "narrow. It is a rough guide, not a calibrated interval."
     )
 
 st.divider()
